@@ -1,3 +1,6 @@
+# Fork notes
+This fork was updated to support the new Kaltura links (requires policy, signature and key-pair-id) and provide a Pipfile.
+
 # DEPRECATED
 
 [ffmpeg](https://ffmpeg.org/) is a more robust video stream downloader. To download the video, one simply needs to identify the `.m3u8` playlist file and call
@@ -6,20 +9,21 @@
 ffmpeg -i <url> -c copy <output>
 ```
 
-# UBC Kultura Downloader
-**UBC Kultura Downloader** is a script that, given the URL video stream segment served by Kultura hosted on UBC, can get all the pieces to the video, download them, and stitch them together to a full-length video.
+# UBC Kaltura Downloader
+**UBC Kaltura Downloader** is a script that, given the URL video stream segment served by Kaltura hosted on UBC, can get all the pieces to the video, download them, and stitch them together to a full-length video.
 
-This is a very rudimentary script for a specific use case. I anticipate it may work with other Kultura-based streams if the video is served publicly.
+This is a very rudimentary script for a specific use case. I anticipate it may work with other Kaltura-based streams if the video is served publicly.
 
 ## Requirements
 
 - Python 3
 - `requests` package
-    - Do `pip install -r requirements.txt` or `pip install requests`
+    - Do `pip install -r requirements.txt` or `pip install requests`; or
+	- Do `pipenv install`
 
 ## Usage
 
-The script requires a video stream segment. For example, a URL of the form `https://streaming.video.ubc.ca/ ........  a6rb/name/a.mp4/seg-x-v1-a1.ts?Policy=abc123&Signature=def456&Key-Pair-Id=ABCD1234` where`x` is any valid segment number. You may obtain such URL by playing the video in a browser, opening up the inpect element tool, and finding the requests made by the browser. In Chrome this is under the Network tab.
+The script requires a video stream segment. For example, a URL of the form `https://streaming.video.ubc.ca/......a6rb/name/a.mp4/seg-x-v1-a1.ts?Policy=abc123&Signature=def456&Key-Pair-Id=ABCD1234` where`x` is any valid segment number. You may obtain such URL by playing the video in a browser, opening up the inpect element tool, and finding the requests made by the browser. In Chrome this is under the Network tab.
 
 Then simply execute `python kaltura_dl.py -url "your-url" -output "filename.mp4"`
 
