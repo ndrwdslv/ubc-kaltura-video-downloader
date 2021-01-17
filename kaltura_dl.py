@@ -3,15 +3,25 @@ import os
 import shutil
 import argparse
 import requests
+from urllib.parse import urlsplit, urlunsplit
 
-temp_dir = "temp_dl"
+# Temp directory where pieces are saved in, default is inside same folder as the script under `temp_dl`
+temp_dir = os.path.join(os.getcwd(), "temp_dl")
 
 def main(url, output_file):
-    # Download all the available segments from the url.
-    # Append /seg-x-v1-a1.ts, check for successful response, and save the file
-
-    response = requests.get(url + "/seg-1-v1-a1.ts")
-
+    """
+    Download all the available segments from the url.
+    Replace seg-x-v1-a1.ts incrementally, check for successful response, and save the file
+    """
+    
+    url = urlsplit(url)
+    # Replace the segment filename with a placeholder for string formatting
+    new_path = url.path[:url.path.index(".mp4") + 4] + "/{}"
+    # Create a URL template from the original URL (can't modify the tuple urlsplit returns)
+    url_template = urlunsplit([url[0], url[1], new_path, url[3], url[4]])
+    
+    # Simply check if initial URL is valid
+    response = requests.get(url_template.format('seg-1-v1-a1.ts'))
     if response.status_code != 200:
         print("Invalid URL or video does not exist.")
         exit()
@@ -21,13 +31,15 @@ def main(url, output_file):
 
     count = 1
     fileList = []
-    print("Downloading pieces...")
+    print("Valid URL provided, start downloading pieces...")
     while response.status_code == 200:
-        curr_seg = "/seg-{}-v1-a1.ts".format(count)
-        response = requests.get(url + curr_seg)
-        with open(temp_dir + curr_seg, 'wb') as f:
+        curr_seg = "seg-{}-v1-a1.ts".format(count)
+        print("Downloading piece #{}".format(count))
+        response = requests.get(url_template.format(curr_seg))
+        temp_file = os.path.join(temp_dir, curr_seg)
+        with open(temp_file, 'wb') as f:
             f.write(response.content)
-        fileList.append(temp_dir + curr_seg)
+        fileList.append(temp_file)
         count += 1
 
     # Edge case: Last piece seems to not contain any video or audio stream
@@ -53,11 +65,9 @@ def main(url, output_file):
 if __name__ == "__main__":
     # Expected input URL format:
     # https://streaming.video.ubc.ca/ ........  a6rb/name/a.mp4
-    parser = argparse.ArgumentParser(description='Download and stitch UBC Kalutra videos')
-    parser.add_argument('-url', action='store', dest='url', default=None, help='URL ending in .../a.mp4')
-    parser.add_argument('-output', action='store', dest='output', default=None, help='Output file name')
+    parser = argparse.ArgumentParser(description='Download and stitch Kalutra videos')
+    parser.add_argument('-url', action='store', dest='url', required=True, help='URL ending in .../a.mp4, include the Policy= and Key-Pair-Id= parts, wrap in double quotes')
+    parser.add_argument('-output', action='store', dest='output', required=True, help='Output file name (include .mp4 extension)')
 
     args = parser.parse_args()
-    # Retain the url upto ".mp4"
-    url = args.url[:args.url.index(".mp4") + 4]
-    main(url, args.output)
+    main(args.url, args.output)
