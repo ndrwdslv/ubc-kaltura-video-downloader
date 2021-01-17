@@ -19,11 +19,9 @@ This is a very rudimentary script for a specific use case. I anticipate it may w
 
 ## Usage
 
-The script requires a video stream segment. For example, a URL of the form `https://streaming.video.ubc.ca/ ........  a6rb/name/a.mp4/seg-x-v1-a1.ts` where`x` is any valid segment number. You may obtain such URL by playing the video in a browser, opening up the inpect element tool, and finding the requests made by the browser. In Chrome this is under the Network tab.
+The script requires a video stream segment. For example, a URL of the form `https://streaming.video.ubc.ca/ ........  a6rb/name/a.mp4/seg-x-v1-a1.ts?Policy=abc123&Signature=def456&Key-Pair-Id=ABCD1234` where`x` is any valid segment number. You may obtain such URL by playing the video in a browser, opening up the inpect element tool, and finding the requests made by the browser. In Chrome this is under the Network tab.
 
-Then simply execute `python3 kaltura_dl.py -url <your-url> -output <filename>`
-
-It may be wise to place the URL and filename in quotations if you get any errors.
+Then simply execute `python kaltura_dl.py -url "your-url" -output "filename.mp4"`
 
 ## Other
 
